@@ -1,3 +1,5 @@
+// Generated week number list
+
 let
 	Source = {0..54},
 	ConvertedToTable = Table.FromList(
