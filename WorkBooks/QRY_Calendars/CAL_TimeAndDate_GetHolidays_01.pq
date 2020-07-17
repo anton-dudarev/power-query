@@ -60,7 +60,7 @@ let
 	),
 	TrimmedText = Table.TransformColumns(MergedColumns, {{"Праздники", Text.Trim, type text}}),
 	#"Replaced Errors" = Table.ReplaceErrorValues(TrimmedText, {{"Праздники", null}}),
-	AddedYear = Table.AddColumn(#"Replaced Errors", "Year", each Text.From(2020)),
+	AddedYear = Table.AddColumn(#"Replaced Errors", "Year", each Text.From(lstYears{0})),
 	RenamedColumns = Table.RenameColumns(
 		AddedYear, 
 		{
