@@ -15,7 +15,7 @@ let
       FilteredRows, 
       each Text.Contains([Column1], "<tr><td>")
     ),
-  Column1 = FilteredRows2{0}[Column1],
+  Column1 = FilteredRows{0}[Column1],
   SplittedText = Text.Split(Column1, "<tr><td>"),
   ConvertedListToTable = Table.FromList(
       SplittedText, 
