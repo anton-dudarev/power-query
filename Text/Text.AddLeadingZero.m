@@ -1,0 +1,1 @@
+Text.PadStart(Text.From([Column]), 2, "0")
