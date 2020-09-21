@@ -1,6 +1,6 @@
-/* //Check if a string contains any of the keywords from a given list
+//Check if a string contains any of the keywords from a given list
 // Usage: fnTextContainsAny("the cat sat on the mat", {"cat", "apple"})
-// Result: true */ 
+// Result: true 
 
 (String as text, Keywords as list) as logical => 
   let
