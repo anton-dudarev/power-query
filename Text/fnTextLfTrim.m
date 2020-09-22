@@ -1,3 +1,5 @@
+// Removing #{lf} characters
+
 let
   fnLfTrim = (Text as text) => 
     let
