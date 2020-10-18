@@ -1,5 +1,5 @@
 /* //Create a table with info on all sheets in any Excel files in a particular folder.
-//Usage: Files.SheetsInFolder = Load("Files.SheetsInFolder"), Source = Files.SheetsInFolder("C:\path\to\my\folder\")
+//Usage: Source = Files.SheetsInFolder("C:\path\to\my\folder\")
 //Result: [a table containing the binary file content, file names, sheet tables, and sheet names for each sheet in each spreadsheet in the given folder] */ 
 
 (FolderPath as text) as table => 
