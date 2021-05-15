@@ -1,4 +1,7 @@
 // Search with regular expressions
+// Usage: fnRegExp("Text", "(\d{4})", ";")
+// Source: https://www.planetaexcel.ru/techniques/7/13310/
+
 let
   RegExp = (txt as text, regex as text, delim as text) =>
     Web.Page(
