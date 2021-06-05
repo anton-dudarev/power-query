@@ -12,11 +12,10 @@ let
     null,
     ExtraValues.Ignore
   ),
-  SortedRows = Table.Sort(ConvertedToTable, {{"Column1", Order.Descending}}),
-  ChangedType = Table.TransformColumnTypes(SortedRows, {{"Column1", type date}}),
+  ChangedType = Table.TransformColumnTypes(ConvertedToTable, {{"Column1", type date}}),
   InsertedDayOfWeek = Table.AddColumn(
     Table.RenameColumns(ChangedType, {{"Column1", "Дата"}}),
-    "День недели",
+    "Номер дня недели",
     each Date.DayOfWeek([Дата]),
     Int64.Type
   ),
@@ -34,19 +33,19 @@ let
   ),
   InsertedDayName = Table.AddColumn(
     Table.AddColumn(InsertedDaysInMonth, "День года", each Date.DayOfYear([Дата]), Int64.Type),
-    "Название дня полное",
+    "Название дня недели",
     each Date.DayOfWeekName([Дата]),
     type text
   ),
   CapitalizedDayName = Table.TransformColumns(
     InsertedDayName,
-    {{"Название дня полное", Text.Proper, type text}}
+    {{"Название дня недели", Text.Proper, type text}}
   ),
   DaysShortName = {"пн", "вт", "ср", "чт", "пт", "сб", "вс"},
   AddedDayNameShort = Table.AddColumn(
     CapitalizedDayName,
-    "Название дня",
-    each DaysShortName{[День недели]},
+    "День недели",
+    each DaysShortName{[Номер дня недели]},
     type text
   ),
   InsertedMonth = Table.AddColumn(AddedDayNameShort, "Месяц", each Date.Month([Дата]), Int64.Type),
@@ -63,10 +62,24 @@ let
     each Date.QuarterOfYear([Дата]),
     Int64.Type
   ),
-  InsertedDayTypeID = Table.AddColumn(
+  MergedQueryHolidays = Table.NestedJoin(
     InsertedQuarter,
+    {"Дата"},
+    SRC_RollingHolidays,
+    {"Date"},
+    "SRC_RollingHolidays",
+    JoinKind.LeftOuter
+  ),
+  ExpandedHolidays = Table.ExpandTableColumn(
+    MergedQueryHolidays,
+    "SRC_RollingHolidays",
+    {"Holiday"},
+    {"Праздник"}
+  ),
+  InsertedDayTypeID = Table.AddColumn(
+    ExpandedHolidays,
     "Рабочий день ID",
-    each if [День недели] <= 4 then 1 else 0,
+    each if [Номер дня недели] <= 4 and [Праздник] = null then 1 else 0,
     Int64.Type
   ),
   InsertedDayType = Table.AddColumn(
