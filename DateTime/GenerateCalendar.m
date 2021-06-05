@@ -48,24 +48,36 @@ let
     each DaysShortName{[Номер дня недели]},
     type text
   ),
-  InsertedMonth = Table.AddColumn(AddedDayNameShort, "Месяц", each Date.Month([Дата]), Int64.Type),
+  InsertedMonth = Table.AddColumn(
+    AddedDayNameShort,
+    "Номер месяца",
+    each Date.Month([Дата]),
+    Int64.Type
+  ),
   InsertedMonthName = Table.AddColumn(
     InsertedMonth,
-    "Название месяца",
+    "Месяц",
     each Date.MonthName([Дата]),
     type text
   ),
   InsertedYear = Table.AddColumn(InsertedMonthName, "Год", each Date.Year([Дата]), Int64.Type),
   InsertedQuarter = Table.AddColumn(
     InsertedYear,
-    "Квартал",
+    "Номер квартала",
     each Date.QuarterOfYear([Дата]),
     Int64.Type
+  ),
+  QuarterName = {"Не присвоено", "Первый", "Второй", "Третий", "Четвертый"},
+  AddedQuarterName = Table.AddColumn(
+    InsertedQuarter,
+    "Квартал",
+    each QuarterName{[Номер квартала]},
+    type text
   ),
   MergedQueryHolidays = Table.NestedJoin(
     InsertedQuarter,
     {"Дата"},
-    SRC_RollingHolidays,
+    Holidays,
     {"Date"},
     "SRC_RollingHolidays",
     JoinKind.LeftOuter
@@ -97,7 +109,7 @@ let
   AddedYYMM = Table.AddColumn(
     AddedWeekNumber,
     "YYMM",
-    each ([Год] - 2000) * 100 + [Месяц],
+    each ([Год] - 2000) * 100 + [Номер месяца],
     Int64.Type
   ),
   AddedDateID = Table.AddColumn(
@@ -106,6 +118,29 @@ let
     each (Date.Year([Дата]) - Date.Year(Source)) * 12 + Date.Month([Дата]),
     Int64.Type
   ),
-  RemovedDuplicates = Table.Distinct(AddedDateID, {"Дата"})
+  SortedRows = Table.Sort(AddedDateID, {{"Дата", Order.Descending}}),
+  RemovedDuplicates = Table.Distinct(SortedRows, {"Дата"}),
+  ReorderedColumns = Table.ReorderColumns(
+    RemovedDuplicates,
+    {
+      "Дата",
+      "Номер недели",
+      "Рабочий день",
+      "Название дня недели",
+      "День недели",
+      "Месяц",
+      "Год",
+      "Номер месяца",
+      "Номер дня недели",
+      "День месяца",
+      "Дней в месяце",
+      "День года",
+      "Номер квартала",
+      "Рабочий день ID",
+      "YYMM",
+      "Дата ID",
+      "Праздник"
+    }
+  )
 in
-  RemovedDuplicates
+  ReorderedColumns
